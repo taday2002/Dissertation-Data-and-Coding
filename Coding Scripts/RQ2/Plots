@@ -1,0 +1,29 @@
+# Aphid Plots #
+
+aphid_cumulative$distance <- as.factor(aphid_cumulative$distance)
+
+ggplot(aphid_cumulative, aes(x = distance, y = cumulative_aphids)) +
+  geom_boxplot(fill = "lightgreen", color = "black", outlier.size = 1.5) +
+  geom_jitter(width = 0.2, alpha = 0.4, size = 1) +
+  facet_grid(~ wildflower_group, scales = "free_x", space = "free_x") +
+  labs(
+    x = "Wildflower Density and Distance (m)",
+    y = "Cumulative Aphid Abundance"
+  ) +
+  theme_clean_base()
+
+
+
+# Mummy Plots #
+mummy_cumulative$distance <- as.factor(mummy_cumulative$distance)
+
+ggplot(mummy_cumulative, aes(x = distance, y = cumulative_mummies)) +
+  geom_boxplot(fill = "lightgreen", color = "black", outlier.size = 1.5) +
+  geom_jitter(width = 0.2, alpha = 0.4, size = 1) +
+  facet_grid(~ wildflower_group, scales = "free_x", space = "free_x") +
+  labs(
+    x = "Wildflower Density and Distance (m)",
+    y = "Cumulative Mummy Abundance"
+  ) +
+  theme_clean_base()
+

@@ -1,0 +1,21 @@
+# Models Ran #
+cm_lm1 <- lm(cumulative_mummies ~ distance, data = mummy_cumulative)
+cm_lm2 <- lm(cumulative_mummies ~ wildflower_group, data = mummy_cumulative)
+cm_lm3 <- lm(cumulative_mummies_log ~ wildflower_group, data = mummy_cumulative)
+cm_glmm <- glmmTMB(cumulative_mummies ~ distance + wildflower_group + (1 | Plot/Plot_ID), data = mummy_cumulative, family = nbinom2())
+cm_glmm2 <- glmmTMB(cumulative_mummies ~ distance + wildflower_group + (1 | Plot/Plot_ID), data = mummy_cumulative, family = nbinom2(), ziformula = ~1)
+cm_glmm3 <- glmmTMB(cumulative_mummies ~ distance * wildflower_group + (1 | Plot/Plot_ID), data = mummy_cumulative, family = nbinom2(link = "log"))
+cm_glmm4 <- glmmTMB(cumulative_mummies ~ wildflower_group + distance + (1 | Plot/Plot_ID), data = mummy_cumulative, family = nbinom2(link = "log"))
+
+# AICc Model fit evaluation #
+AICc(cm_lm1, cm_lm2, cm_lm3, cm_glmm, cm_glmm2, cm_glmm3, cm_glmm4)
+
+# DHARMa Model Evaluation # 
+library(DHARMa)
+res <- simulateResiduals(fittedModel = cm_glmm, plot = TRUE)
+testDispersion(sim_res)
+testZeroInflation(sim_res)
+testOutliers(sim_res)
+
+# Model Output #
+summary(cm_glmm)

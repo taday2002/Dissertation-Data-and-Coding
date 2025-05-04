@@ -1,0 +1,18 @@
+cm_lm <- lm(mummy_count ~ wildflower_group, data = mummy_peaks, family = nbinom2())
+cm_glmm1 <- glmmTMB(mummy_count ~ wildflower_group + (1 |Plot/Plot_Group), data = mummy_peaks, family = nbinom2())
+cm_glmm2 <- glmmTMB(mummy_count ~ wildflower_group + (1 |Plot), data = mummy_peaks, family = nbinom2())
+cm_glmm3 <- glmmTMB(mummy_count ~ wildflower_group, data = mummy_peaks, family = nbinom2())
+cm_glmm4 <- glmmTMB(mummy_count ~ wildflower_group + (1 |Plot/Plot_Group), data = mummy_peaks, family = nbinom2(log = link))
+
+# AICc Model Comparison #
+AICc(cm_lm, cm_glmm1, cm_glmm2, cm_glmm3, cm_glmm4)
+
+# DHARMa Model Evaluation #
+library(DHARMa)
+simulateResiduals(cm_glmm1, plot = TRUE)
+
+# Model Output #
+summary(cm_glmm1)
+
+# Pairwise Comparisons #
+emmeans(cm_glmm1, pairwise ~ wildflower_group, type = "response")

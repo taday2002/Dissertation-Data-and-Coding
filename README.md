@@ -1,11 +1,15 @@
 # Dissertation-Data-and-Coding
 Dissertation: Enhancing Biological Control: The Complementary Use of Wildflower Strips and Aphidius ervi Augmentation in Suppressing Pest Aphid Populations
+
 By Tyler-Ann Day
+
 This Repository contains all the data I used for my analysis, including code for models and plots. 
+
 
 DATA USED:
 - Raw Data: contains abundance counts over the growing season
 - Wildflower Data: contains all species composition of each margin
+
 
 Coding Folder Organisation 
 - RQ1: Wildflower Density

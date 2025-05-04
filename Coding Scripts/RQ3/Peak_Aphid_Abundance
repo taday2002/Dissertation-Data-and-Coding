@@ -1,0 +1,19 @@
+# Models Ran #
+aa_lm <- lm(aphid_count_log ~ wildflower_group, data = aphid_peaks)
+aa_glm <- glm(aphid_count ~ wildflower_group, data = aphid_peaks, family = poisson(link = "log"))
+aa_glmm2 <- glmmTMB(aphid_count ~ wildflower_group, data = aphid_peaks, family = nbinom2())
+aa_glmm3 <- glmmTMB(aphid_count ~ wildflower_group + (1 | Plot/Plot_ID), data = aphid_peaks, family = nbinom2()) # lowest AICc
+
+# AICc Model Comparison #
+AICc(aa_lm, aa_glmm2, aa_glmm3, aa_glm)
+
+# DHARMa Model Evaluation #
+library(DHARMa)
+simulateResiduals(aa_glmm3, plot = TRUE)
+
+# Model Output #
+summary(aa_glmm3)
+
+# Pairwise Comparison #
+library(emmeans)
+emmeans(aa_glmm3, pairwise ~ wildflower_group, type = "response")

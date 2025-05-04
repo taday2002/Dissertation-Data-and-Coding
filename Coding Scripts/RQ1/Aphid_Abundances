@@ -1,0 +1,29 @@
+# Models Ran #
+
+a_lm1 <- lm(aphid_count ~ wildflower, data = aphids_long)
+a_lm2 <- lm(log(aphid_count + 1) ~ wildflower, data = aphids_long)
+a_glmm1 <- glmmTMB(aphid_count ~ wildflower + day + (1 | Plot/Plot_ID), data = aphids_long, family = nbinom2())
+a_glmm2 <- glmmTMB(aphid_count ~ wildflower * day + (1 | Plot/Plot_ID), data = aphids_long, family = nbinom2())
+a_glmm3 <- glmmTMB(aphid_count ~ wildflower + day + (1 | Plot), data = aphids_long, family = nbinom2())
+a_glmm4 <- glmmTMB(aphid_count ~ wildflower * day + (1 | Plot), data = aphids_long, family = nbinom2())
+a_glmm5 <- glmmTMB(aphid_count ~ wildflower + day + (1 | Plot/Plot_ID), data = aphids_long, ziformula = ~1, family = nbinom2())
+a_glmm6 <- glmmTMB(aphid_count ~ wildflower + (1 | Plot/Plot_ID), data = aphids_long, family = nbinom2())
+glmm_spline <- glmmTMB(aphid_count ~ wildflower + ns(day, df = 2) + (1 | Plot/Plot_ID), data = aphids_long, family = nbinom2()) # Chosen model
+glmm_spline1 <- glmmTMB(aphid_count ~ wildflower + ns(day, df = 3) + (1 | Plot/Plot_ID), data = aphids_long, family = nbinom2())
+glmm_spline2 <- glmmTMB(aphid_count ~ wildflower + ns(day, df = 5) + (1 | Plot/Plot_ID), data = aphids_long, family = nbinom2())
+
+# Testing AIC scores #
+AICc(a_lm2, a_lm1, a_glmm1, a_glmm2, a_glmm3, a_glmm4, 
+     a_glmm5, a_glmm6, glmm_spline, glmm_spline1, glmm_spline2)
+
+
+# DHARMa Model Evaluation #
+library(DHARMa)
+sim_res <- simulateResiduals(glmm_spline, plot = TRUE)
+testDispersion(sim_res)
+testZeroInflation(sim_res)
+testOutliers(sim_res)
+# no model violations #
+
+# Model Output #
+summary(glmm_spline)

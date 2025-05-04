@@ -19,3 +19,7 @@ testOutliers(sim_res)
 
 # Model Output #
 summary(cm_glmm)
+
+# Pairwise Comparisons on Distance and wildflower group #
+emmeans(cm_glmm, pairwise ~ wildflower_group | distance, type = "response")
+emmeans(cm_glmm, pairwise ~ distance, type = "response")

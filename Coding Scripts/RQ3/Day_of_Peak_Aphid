@@ -1,0 +1,25 @@
+# Models Ran #
+da_lm <- lm(day ~ wildflower_group, data = peak_aphid_day)
+da_lm_log <- lm(log_day ~ wildflower_group, data = peak_aphid_day)
+da_glm1 <- glm(day ~ wildflower_group, data = peak_aphid_day) # The lowest
+da_glm2 <- glm(day ~ wildflower_group, data = peak_aphid_day, family = poisson)
+da_glm3 <- glm(day ~ wildflower_group, data = peak_aphid_day, family = gaussian)
+da_glmm <- glmmTMB(day ~ wildflower_group + (1 | Plot/Plot_ID), data = peak_aphid_day, family = nbinom2())
+da_glmm1 <- glmmTMB(day ~ wildflower_group + (1 | Plot/Plot_ID), data = peak_aphid_day, family = nbinom2(link = "log"))
+da_glmm2 <- glmmTMB(day ~ wildflower_group + (1 | Plot), data = peak_aphid_day, family = nbinom2())
+
+# AICc Model Comparison #
+AICc(da_glm1, da_glm2, da_glm3, da_glmm, da_glmm1, da_glmm2)
+
+# DHARMa Model Evaluation #
+simulateResiduals(da_glm1, plot = TRUE)
+testResiduals(sim_res)            # Overall residual checks
+testUniformity(sim_res)           # Tests if residuals are uniformly distributed
+testDispersion(sim_res)           # Over/underdispersion
+testZeroInflation(sim_res)        # Relevant for count models
+
+# Model Output #
+summary(da_glm1)
+
+# Pairwise Comparison #
+emmeans(da_glm1, pairwise ~ wildflower_group, type = "response")

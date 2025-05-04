@@ -1,0 +1,32 @@
+dm_lm_log <- lm(log_day ~ wildflower_group, data = peak_mummy_day)
+dm_glm1 <- glm(day ~ wildflower_group, data = peak_mummy_day)
+dm_glm2 <- glm(day ~ wildflower_group, data = peak_mummy_day, family = poisson)
+dm_glm3 <- glm(day ~ wildflower_group, data = peak_mummy_day, family = gaussian)
+dm_glmm <- glmmTMB(day ~ wildflower_group + (1 | Plot/Plot_Group), data = peak_mummy_day, family = nbinom2())
+dm_glmm1 <- glmmTMB(day ~ wildflower_group + (1 | Plot/Plot_Group), data = peak_mummy_day, family = nbinom2(link = "log"))
+dm_glmm2 <- glmmTMB(day ~ wildflower_group + (1 | Plot), data = peak_mummy_day, family = nbinom2()) # Lowest AICc
+dm_glmm6 <- glmmTMB(day ~ wildflower_group + (1 | Plot_Group), data = peak_mummy_day, family = nbinom2())
+dm_glmm3 <- glmmTMB(day ~ wildflower_group, data = peak_mummy_day, family = nbinom2())
+dm_glmm4 <- glmmTMB(day ~ wildflower_group + (1 | wildflower_group/Plot), data = peak_mummy_day, family = nbinom2())
+dm_glmm5 <- glmmTMB(day ~ wildflower_group + (1 | wildflower_group/Plot_Group), data = peak_mummy_day, family = nbinom2())
+dm_glmm7 <- glmmTMB(day ~ wildflower_group + (1 | Plot) + (1 | Plot_Group), data = peak_mummy_day, family = nbinom2())
+dm_glmm4_gauss <- glmmTMB(day ~ wildflower_group + (1 | wildflower_group/Plot), data = peak_mummy_day, family = gaussian())
+dm_glmm8 <- glmmTMB(day ~ wildflower_group + (1 | Plot) + (1 | Plot_Group), dispformula = ~ wildflower_group, data = peak_mummy_day, family = nbinom2())
+dm_glmm9 <- glmmTMB(day ~ wildflower_group + (1 | Plot) + (1 | Plot_Group), ziformula = ~ wildflower_group, dispformula = ~ wildflower_group, data = peak_mummy_day, family = nbinom2())
+
+# AICc Model Comparison #
+AICc(dm_glmm8, dm_glmm6, dm_glmm5, dm_glmm4_gauss,dm_glmm4, dm_glm1, dm_glm2, dm_glm3, dm_glmm, dm_glmm1, dm_glmm2, dm_glmm3)
+summary(dm_glmm2)
+
+# DHARMa Model Evaluation #
+simulateResiduals(dm_glmm2, plot = TRUE)
+testResiduals(sim_res)            # Overall residual checks
+testUniformity(sim_res)           # Tests if residuals are uniformly distributed
+testDispersion(sim_res)           # Over/underdispersion
+testZeroInflation(sim_res)        # Relevant for count models
+
+# Model Output #
+summary(dm_glmm2)
+
+# Pairwise Comparison #
+emmeans(dm_glmm2, pairwise ~ wildflower_group, type = "response")

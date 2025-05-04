@@ -1,0 +1,26 @@
+# Models Ran #
+c_lm1 <- lm(cumulative_aphids ~ distance, data = aphid_cumulative)
+c_lm2 <- lm(cumulative_aphids ~ wildflower_group, data = aphid_cumulative)
+c_lm3 <- lm(cumulative_aphids_log ~ distance, data = aphid_cumulative)
+c_glmm1 <- glmmTMB(cumulative_aphids ~ distance + wildflower_group + (1 | Plot/Plot_ID), data = aphid_cumulative, family = nbinom2(link = "log"))
+c_glmm2 <- glmmTMB(cumulative_aphids ~ distance + wildflower_group + (1 | Plot/Plot_ID), data = aphid_cumulative, family = nbinom2())
+c_glmm3 <- glmmTMB(cumulative_aphids ~ distance + wildflower_group + (1 | Plot/Plot_ID), data = aphid_cumulative, family = nbinom2(), ziformula = ~1)
+c_glmm4 <- glmmTMB(cumulative_aphids ~ distance * wildflower_group + (1 | Plot/Plot_ID), data = aphid_cumulative, family = nbinom2(link = "log"))
+
+# AICc model fit comparison #
+AICc(c_lm1, c_lm2, c_glmm1, c_glmm2, c_glmm3, c_glmm4)
+
+# DHARMa Model Evaluation #
+library(DHARMa)
+res <- simulateResiduals(fittedModel = c_glmm5, plot = TRUE)
+testDispersion(sim_res)
+testZeroInflation(sim_res)
+testOutliers(sim_res)
+
+# Model Output # 
+summary(c_glmm2)
+
+# Pairwise Comparisons on Distance and wildflower group #
+emmeans(c_glmm5, pairwise ~ wildflower_group | distance, type = "response")
+emmeans(c_glmm5, pairwise ~ distance, type = "response")
+

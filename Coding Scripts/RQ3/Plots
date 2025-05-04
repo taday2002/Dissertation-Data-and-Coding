@@ -1,0 +1,57 @@
+# Libraries #
+library(patchwork)
+library(ggtext)
+library(showtext)
+
+# Setting Up Plot Aesthetics # 
+theme_clean_base <- function(base_size = 12, base_family = "sans") {
+  theme_minimal(base_size = base_size, base_family = base_family) +
+    theme(
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank(),
+      panel.border = element_blank(),
+      axis.line = element_line(color = "black"),
+      axis.ticks = element_line(color = "black"),
+      legend.key = element_blank(),
+      plot.title = element_text(size = base_size + 2, face = "bold"),
+      plot.subtitle = element_text(size = base_size),
+      axis.text = element_text(size = base_size),
+      axis.title = element_text(size = base_size + 1),
+      legend.text = element_text(size = base_size),
+      legend.title = element_text(size = base_size + 1),
+      strip.background = element_blank(),
+      strip.text = element_text(size = base_size + 1, face = "bold")
+    )
+}
+
+# Peak Aphid Abundance #
+(plot_aphid_peak <- ggplot(aphid_peaks, aes(x = wildflower_group, y = aphid_count)) +
+    geom_boxplot(fill = "lightgreen", alpha = 0.6) +
+    geom_jitter(width = 0.2, alpha = 0.6, size = 1) +
+    labs(x = "Wildflower Density", y = "Peak Aphid Abundance") +
+    theme_clean_base())
+
+# Peak Mummy Abundance #
+(plot_mummy_peak <- ggplot(mummy_peaks, aes(x = wildflower_group, y = mummy_count)) +
+    geom_boxplot(fill = "lightgreen", alpha = 0.6) +
+    geom_jitter(width = 0.2, alpha = 0.6, size = 1) +
+    labs(x = "Wildflower Density", y = "Peak Mummy Abundance") +
+    theme_clean_base())
+
+# Combined Plot #
+combined_peak_plot <- plot_aphid_peak + plot_mummy_peak + plot_layout(ncol = 2) +
+plot_annotation(tag_levels = 'A')
+combined_peak_plot
+
+# Timings of Peak Abundances: Both aphid and mummy #
+ggplot(peak_days, aes(x = wildflower_group, y = day, fill = type)) +
+  geom_boxplot(alpha = 0.6, position = position_dodge(width = 0.75)) +
+  geom_jitter(position = position_jitterdodge(jitter.width = 0.2, dodge.width = 0.75),
+              alpha = 0.5, size = 1.5) +
+  scale_fill_manual(values = c("Aphid" = "lightgreen", "Mummy" = "lightpink")) +
+  labs(
+    x = "Wildflower Density Group",
+    y = "Day of Peak Abundance",
+    fill = "Organism"
+  ) +
+  theme_clean_base()

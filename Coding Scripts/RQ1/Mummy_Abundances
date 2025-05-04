@@ -1,0 +1,23 @@
+# Models Ran #
+m_lm1 <- lm(mummy_count ~ wildflower, data = long_mummy)
+m_lm2 <- lm(mummy_count ~ wildflower + day, data = long_mummy)
+m_glm1 <- glm(mummy_count ~ wildflower + day, data = long_mummy, family = poisson)
+m_glmm1 <- glmer(mummy_count ~ wildflower + day + (1 | Plot), data = long_mummy, family = poisson)
+m_glmm2 <- glmmTMB(mummy_count ~ wildflower + day + (1 | Plot/Plot_Group), data = long_mummy, family = nbinom2(link = "log"))
+m_glmm3 <- glmmTMB(mummy_count ~ wildflower * day + (1 | Plot/Plot_Group), data = long_mummy, family = nbinom2(link = "log"))
+m_glmm_splines1 <- glmmTMB(mummy_count ~ wildflower + ns(day, df = 2) + (1 | Plot/Plot_Group), data = long_mummy, family = nbinom2(link = "log")) # chosen model 
+m_glmm_splines2 <- glmmTMB(mummy_count ~ wildflower + ns(day, df = 3) + (1 | Plot/Plot_Group), data = long_mummy, family = nbinom2(link = "log"))
+
+# Testing AICc model fit #
+AICc(m_lm1, m_lm2, m_glm1, m_glmm1, m_glmm2, m_glmm3, m_glmm_splines1, m_glmm_splines2)
+
+# DHARMa Model Evaluation #
+library(DHARMa)
+sim_res <- simulateResiduals(m_glmm_splines1, plot = TRUE)
+testDispersion(sim_res)
+testZeroInflation(sim_res)
+testOutliers(sim_res)
+
+# Model Output #
+summary(m_glmm_splines1)
+
